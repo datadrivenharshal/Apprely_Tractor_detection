@@ -1,0 +1,16 @@
+train: C:/Users/HP/OneDrive/Dokumen/GitHub/Traffic_Management_RT/data/data_tractor_det/images/train
+val: C:/Users/HP/OneDrive/Dokumen/GitHub/Traffic_Management_RT/data/data_tractor_det/images/val
+#test: ../test/images
+
+nc: 1
+names: ['tractor']
+
+roboflow:
+  workspace: tractordetection-dedty
+  project: tractordetection-2
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/tractordetection-dedty/tractordetection-2/dataset/1
+
+#yolo task=detect mode=train model=yolo11n.pt data=data.yaml epochs=15 imgsz=640 batch=16 patience=5
+#yolo task=detect mode=predict model=runs/detect/train/weights/best.pt source=../test/images conf=0.25 save=True show=True
