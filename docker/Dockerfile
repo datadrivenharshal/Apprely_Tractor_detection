@@ -1,11 +1,8 @@
 # Define arguments for PyTorch and CUDA versions
 ARG PYTORCH="2.5.1"
 ARG CUDA="12.1"
-# CUDNN is optional and bundled with PyTorch image (cuDNN 9 for CUDA 12.1), so not explicitly defined
-# If you need a specific cuDNN version, uncomment and set: ARG CUDNN="9"
-
-# Use PyTorch CUDA development image as base
-FROM pytorch/pytorch:${PYTORCH}-cuda${CUDA}-devel
+# Use PyTorch CUDA development image with cuDNN 9 as base
+FROM pytorch/pytorch:${PYTORCH}-cuda${CUDA}-cudnn9-devel
 
 # Set working directory
 WORKDIR /app
@@ -59,8 +56,8 @@ RUN wget https://bootstrap.pypa.io/get-pip.py && \
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 
 # Clone your GitHub repository
-# REPLACE <your-github-repo-url> with your actual repository URL
-RUN git clone <your-github-repo-url> repo && \
+# REPLACE with your actual repo URL
+RUN git clone https://github.com/datadrivenharshal/Apprely_Tractor_detection.git repo && \
     mv repo/* . && \
     rm -rf repo
 
@@ -87,5 +84,5 @@ RUN python3 -m pip install \
 # Set Python path
 ENV PYTHONPATH=/app:$PYTHONPATH
 
-# Open a bash shell instead of running the app
+# Open a bash shell
 CMD ["/bin/bash"]
