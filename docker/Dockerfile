@@ -17,13 +17,12 @@ ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6 8.9+PTX" \
 
 # Avoid Public GPG key error
 RUN rm -f /etc/apt/sources.list.d/cuda.list \
-    && apt-key del 7fa2af80 \
+    && apt-key del 7fa2af80 || true \
     && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub \
     && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu2004/x86_64/7fa2af80.pub
 
-# Install required system packages and Python 3.9
-RUN apt-get update \
-    && apt-get install -y \
+# Install required system packages and Python 3.10
+RUN apt-get update && apt-get install -y \
     software-properties-common \
     build-essential \
     wget \
@@ -35,19 +34,17 @@ RUN apt-get update \
     libxrender-dev \
     ninja-build \
     libglib2.0-0 \
-    python3.9 \
-    python3.9-dev \
-    python3.9-distutils \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    python3.10 \
+    python3.10-dev \
+    python3.10-distutils \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
-# Install pip for Python 3.9
-RUN wget https://bootstrap.pypa.io/get-pip.py && \
-    python3.9 get-pip.py && \
-    rm get-pip.py
+# Install pip for Python 3.10
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 
-# Ensure python3 points to python3.9
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
+# Ensure python3 points to python3.10
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 
 # Clone your GitHub repository
 # REPLACE with your actual repo URL
