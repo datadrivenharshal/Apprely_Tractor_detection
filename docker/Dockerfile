@@ -13,8 +13,7 @@ ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6 8.9+PTX" \
     TORCH_NVCC_FLAGS="-Xfatbin -compress-all" \
     CMAKE_PREFIX_PATH="$(dirname $(which conda))/../" \
     FORCE_CUDA="1" \
-    DEBIAN_FRONTEND=noninteractive \
-    PATH="/usr/bin:/usr/local/bin:$PATH"
+    DEBIAN_FRONTEND=noninteractive
 
 # Avoid Public GPG key error
 RUN rm -f /etc/apt/sources.list.d/cuda.list \
@@ -47,20 +46,27 @@ RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 # Ensure python3 points to python3.10
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 
-# Update PATH to include Python 3.10 explicitly
-ENV PATH="/usr/bin/python3.10:/usr/local/bin/python3.10:$PATH"
-
 # Clone your GitHub repository
 # REPLACE with your actual repo URL
 RUN git clone https://github.com/datadrivenharshal/Apprely_Tractor_detection.git repo && \
     mv repo/* . && \
     rm -rf repo
 
-# Copy requirements.txt into the container
-COPY requirements.txt .
+# Install Ultralytics
+RUN python3 -m pip install ultralytics
 
-# Install Python dependencies from requirements.txt
-RUN python3 -m pip install -r requirements.txt
+# Install Streamlit
+RUN python3 -m pip install streamlit
+
+# Install additional common dependencies
+RUN python3 -m pip install \
+    opencv-python \
+    numpy \
+    pillow \
+    matplotlib \
+    pandas \
+    scipy \
+    scikit-learn
 
 # Open a bash shell
 CMD ["/bin/bash"]
