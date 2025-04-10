@@ -1,6 +1,7 @@
 # Define arguments for PyTorch and CUDA versions
 ARG PYTORCH="2.5.1"
 ARG CUDA="12.1"
+
 # Use PyTorch CUDA development image with cuDNN 9 as base
 FROM pytorch/pytorch:${PYTORCH}-cuda${CUDA}-cudnn9-devel
 
@@ -14,13 +15,13 @@ ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6 8.9+PTX" \
     FORCE_CUDA="1" \
     DEBIAN_FRONTEND=noninteractive
 
-# Avoid Public GPG key error (updated for Ubuntu 20.04 base in PyTorch 2.5.1 image)
+# Avoid Public GPG key error
 RUN rm -f /etc/apt/sources.list.d/cuda.list \
     && apt-key del 7fa2af80 \
     && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub \
     && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu2004/x86_64/7fa2af80.pub
 
-# Install required system packages
+# Install required system packages and Python 3.9
 RUN apt-get update \
     && apt-get install -y \
     software-properties-common \
@@ -34,26 +35,19 @@ RUN apt-get update \
     libxrender-dev \
     ninja-build \
     libglib2.0-0 \
+    python3.9 \
+    python3.9-dev \
+    python3.9-distutils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Add deadsnakes PPA to install Python 3.12
-RUN add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y \
-    python3.12 \
-    python3.12-dev \
-    python3.12-distutils \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install pip for Python 3.12
+# Install pip for Python 3.9
 RUN wget https://bootstrap.pypa.io/get-pip.py && \
-    python3.12 get-pip.py && \
+    python3.9 get-pip.py && \
     rm get-pip.py
 
-# Ensure python3 points to python3.12
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+# Ensure python3 points to python3.9
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
 
 # Clone your GitHub repository
 # REPLACE with your actual repo URL
@@ -76,10 +70,6 @@ RUN python3 -m pip install \
     pandas \
     scipy \
     scikit-learn
-
-# If your repo has a requirements.txt, install those dependencies
-# Uncomment the following line if applicable
-# RUN [ -f requirements.txt ] && python3 -m pip install -r requirements.txt || echo "No requirements.txt found"
 
 # Set Python path
 ENV PYTHONPATH=/app:$PYTHONPATH
